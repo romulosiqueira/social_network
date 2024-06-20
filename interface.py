@@ -125,7 +125,16 @@ class SocialNetwork:
                     self.logins[user.login] = user_id
         except FileNotFoundError:
             pass
-
+    
+    def delete_account(self, user_id):
+            if user_id in self.users:
+                del self.logins[self.users[user_id].login]
+                del self.users[user_id]
+                self.save_users()
+                print(f"Account deleted successfully for user ID {user_id}.")
+            else:
+                print("User not found.")
+ 
 def create_new_id(network):
     return max(network.users.keys(), default=0) + 1
 
@@ -137,7 +146,8 @@ def renderMenu():
         "4️⃣  Remove friend",
         "5️⃣  List friends",
         "6️⃣  View network",
-        "7️⃣  Logout"
+        "7️⃣  Delete account"
+        "8️⃣  Logout"
     ]
 
     questions = [
@@ -233,8 +243,19 @@ def console_interface():
             network_view = network.view_network()
             for user, friends in network_view.items():
                 print(f"{user}: {', '.join(friends) if friends else 'No friends.'}")
-
+        
         elif option == '7':
+            print("\n--- Delete account ---")
+            if user_id:
+                confirm = input('Are you sure you want to delete your account? This action cannot be undone. (yes/no): ')
+                if confirm.lower() == 'yes':
+                    network.delete_account(user_id)
+                    user_id = None
+            else:
+                print("❌ You need to log in first.")
+
+        
+        elif option == '8':
             print("Logging out... 👋")
             break
 
